@@ -53,7 +53,7 @@ export default class AppQueue {
     }
 
     static purge() {
-        AppQueue.instance.scheduledQueue.close();
+        AppQueue.instance && AppQueue.instance.scheduledQueue.close();
     }
 
 }
