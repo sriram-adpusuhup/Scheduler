@@ -4,11 +4,17 @@ import Jobs from './jobs';
 
 export default class AppQueue {
 
-    private static instance: AppQueue;
+    private static instance?: AppQueue;
     private scheduledQueue: Queue.Queue;
 
     constructor() {
-        this.scheduledQueue = new Queue('redis://127.0.0.1:6397');
+        console.log(process.env.REDIS_HOST);
+        this.scheduledQueue = new Queue('schedulerQueue', { 
+            redis: {
+                host: process.env.REDIS_HOST,
+                port: 6397
+            }
+        });
         this.scheduledQueue.process(this.queueProcess);
         return this;
     }
@@ -21,7 +27,7 @@ export default class AppQueue {
 
     static getInstance(): AppQueue {
         if (!AppQueue.instance) {
-            AppQueue.initialize();
+            AppQueue.instance = new AppQueue();
         }
         return AppQueue.instance;
     }
@@ -44,6 +50,10 @@ export default class AppQueue {
 
     addJob(config: JobConfig, opts: JobOptions) {
         return this.scheduledQueue.add(config, opts);
+    }
+
+    static purge() {
+        AppQueue.instance.scheduledQueue.close();
     }
 
 }

@@ -6,6 +6,11 @@ import ApiRouter from './api';
 
 setQueues(Queue.getInstance().getQueues());
 
+process.on('unhandledRejection', (e: Error) => {
+    console.error(e.message);
+    console.log(e.stack);
+})
+
 const app = express();
 app.use(express.json());
 
