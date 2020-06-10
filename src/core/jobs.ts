@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Queue from 'bull';
-import {ApiJob, RabbitMQJob, JobConfig} from './types';
+import {ApiJob, RabbitMQJob, JobConfig} from '../types';
 
 export default class Jobs {
     static processApiJob(jobConfig: ApiJob) {
@@ -29,7 +29,6 @@ export default class Jobs {
     }
 
     static processRabbitMqJob(job: RabbitMQJob) {
-        console.log('Processing RabbitMQ Job');
         const {data, queue} = job;
         if (!data) return Promise.reject();
         let path = '';
@@ -43,7 +42,7 @@ export default class Jobs {
             url: `https://queuepublisher.adpushup.com${path}`,
             method: 'POST',
             data: { queue, data },
-        }).then(() =>  Promise.resolve())
+        }).then(res =>  Promise.resolve(res.data))
         .catch(err => {
             return Promise.reject(err);
         });
@@ -74,9 +73,10 @@ export default class Jobs {
             }
         }
         try {
-            console.log('Sending Request');
             const res = await axios.post(url, apiBody);
-            console.log(res);
+            if (res.status !== 200 || res.statusText !== 'OK') {
+                return Promise.reject();
+            }
             return Promise.resolve();
         } catch (err) {
             console.error(err);

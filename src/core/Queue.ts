@@ -1,6 +1,7 @@
-import Queue, { JobOptions } from 'bull';
-import {JobConfig, JobType, ApiJob, RabbitMQJob} from './types';
+import Queue, { JobOptions, Job } from 'bull';
+import {JobConfig, JobType, ApiJob, RabbitMQJob} from '../types';
 import Jobs from './jobs';
+import QueueListeners from './QueueListeners';
 
 export default class AppQueue {
 
@@ -10,6 +11,7 @@ export default class AppQueue {
     constructor() {
         this.scheduledQueue = new Queue('schedulerQueue', process.env.REDIS_HOST || 'redis://127.0.0.1:6379');
         this.scheduledQueue.process(this.queueProcess);
+        this.setupQueueListeners();
         return this;
     }
 
@@ -24,6 +26,18 @@ export default class AppQueue {
             AppQueue.instance = new AppQueue();
         }
         return AppQueue.instance;
+    }
+
+    setupQueueListeners() {
+        this.scheduledQueue
+            .on('active', QueueListeners.onActive)
+            .on('error', QueueListeners.onError)
+            .on('waiting', QueueListeners.onWaiting)
+            .on('completed', QueueListeners.onCompleted)
+            .on('stalled', QueueListeners.onStalled)
+            .on('failed', QueueListeners.onFailed)
+            .on('cleaned', QueueListeners.onClean)
+            .on('removed', QueueListeners.onRemoved)
     }
 
     getQueues(): Queue.Queue[] {
@@ -44,6 +58,10 @@ export default class AppQueue {
 
     addJob(config: JobConfig, opts: JobOptions) {
         return this.scheduledQueue.add(config, opts);
+    }
+
+    getJob(jobId: string): Promise<Job<JobConfig> | null> {
+        return this.scheduledQueue.getJob(jobId);
     }
 
     static purge() {

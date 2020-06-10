@@ -1,8 +1,8 @@
 import express, {Request, Response} from 'express';
 import path from 'path';
 import {setQueues, UI} from 'bull-board';
-import Queue from './Queue';
-import ApiRouter from './api';
+import Queue from './core/Queue';
+import ApiRouter from './routes/api';
 
 setQueues(Queue.getInstance().getQueues());
 
