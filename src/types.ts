@@ -3,6 +3,11 @@ export enum JobType {
     RABBITMQ = 'RABBITMQ',
 }
 
+export enum RabbitMQJobType {
+    SINGLE = 'SINGLE',
+    BULK = 'BULK',
+}
+
 export enum RequestType {
     GET = 'GET',
     POST = 'POST',
@@ -24,4 +29,7 @@ export type ApiJob = {
     body?: any
 };
 
-export type RabbitMQJob = {}
+export type RabbitMQJob = {
+    data: any;
+    queue: string;
+}

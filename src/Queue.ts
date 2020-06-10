@@ -8,13 +8,7 @@ export default class AppQueue {
     private scheduledQueue: Queue.Queue;
 
     constructor() {
-        console.log(process.env.REDIS_HOST);
-        this.scheduledQueue = new Queue('schedulerQueue', { 
-            redis: {
-                host: process.env.REDIS_HOST,
-                port: 6397
-            }
-        });
+        this.scheduledQueue = new Queue('schedulerQueue', process.env.REDIS_HOST || 'redis://127.0.0.1:6379');
         this.scheduledQueue.process(this.queueProcess);
         return this;
     }
@@ -44,7 +38,7 @@ export default class AppQueue {
             case JobType.RABBITMQ:
                 return Jobs.processRabbitMqJob(config as RabbitMQJob);
             default: 
-                return Jobs.processInvalidJob(config);
+                return Jobs.processInvalidJob(job);
         }  
     }
 
