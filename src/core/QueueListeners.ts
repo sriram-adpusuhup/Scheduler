@@ -1,5 +1,7 @@
 import { Job } from 'bull';
+import axios from 'axios';
 import { JobConfig } from './../types';
+import Mailer from './Mailer';
 
 export default class QueueListener {
 
@@ -27,9 +29,35 @@ export default class QueueListener {
 
     static onFailed(job: Job<JobConfig>, err: Error) {
         console.log(`Job with ID ${job.id} failed. Attempts made ${job.attemptsMade}. Max attempts ${job.opts.attempts}`);
-        console.error(err);
+        console.log(err);
         if (job.opts.attempts && job.attemptsMade === job.opts.attempts) {
-            //TODO: if job has retries and if reached max retires, execute backoff logic
+            const jobConfig = job.data;
+            if (jobConfig.retryOptions?.fallbackUrl) {
+                const apiBody = {
+                    ...jobConfig,
+                    id: job.id,
+                    error: err
+                }
+                console.log(`Sending fallback hook`);
+                return axios.post(jobConfig.retryOptions.fallbackUrl, apiBody);
+            } else {
+                // if no fallback, mail admin that the job has failed repeatedly
+                const { id: jobId, data: jobData, name: jobName, opts: jobOpts, timestamp } = job;
+                const subject = `Job - ${jobId} failed ${job.attemptsMade} times`;
+                const mailBody = `
+                    <h1> Job Failed Repeatedly </h1>
+                    <div>
+                        <p> Job ID : ${jobId} </p>
+                        <p> Job Name: ${jobName} </p>
+                        <p> Timestamp: ${timestamp} </p
+                        <div> <p> JobData : </p>
+                        <code> ${JSON.stringify(jobData)} </code> </div>
+                        <div> <p> JobOptions : </p>
+                        <code> ${JSON.stringify(jobOpts)} </code> </div>
+                    </div>
+               `;
+               return Mailer.sendMail(mailBody, subject);
+            }
         }
     }
     

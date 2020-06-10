@@ -18,8 +18,14 @@ export enum RequestType {
 
 export type JobConfig = {
     type: JobType;
-    config: any
+    config: any;
+    retryOptions?: RetryOptions;
 };
+
+export type RetryOptions = {
+    attempts: number;
+    fallbackUrl?: string;
+}
 
 export type ApiJob = {
     url: string;

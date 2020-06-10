@@ -9,9 +9,7 @@ export default class SchedulerRoutes {
     
     static async scheduleJobController(req: Request, res: Response): Promise<Response | void> {
         const processData = req.body as JobConfig;
-        const jobOpts: JobOptions = {
-            attempts: 2
-        };
+        const jobOpts: JobOptions = {};
         if (req.query.delay) {
             jobOpts.delay = +req.query.delay;
         } else if (req.query.repeat) {
@@ -19,6 +17,7 @@ export default class SchedulerRoutes {
                 cron: req.query.repeat.toString(),
             }
         }
+        processData.retryOptions && (jobOpts.attempts = processData.retryOptions?.attempts);
 
         const job = await Queue.getInstance().addJob(processData, jobOpts);
         return res.json({message: 'Job added successfully', job});

@@ -20,8 +20,27 @@ export default class ApiRouter {
         return res.json({message: 'PONG'});
      }
 
+
+     static fallbackController(req: Request, res: Response): Response | void {
+        const {
+            body,
+            query,
+            params,
+            headers
+        } = req;
+        console.log('---------------------------- FALLBACK API --------------------------------');
+        console.log({
+            body,
+            query,
+            params,
+            headers
+        })
+        return res.send({}); 
+    }
+
     static initRoutes(app: express.Application) {
         app.get('/api/ping', ApiRouter.pong);
+        app.post('/api/fallback', ApiRouter.fallbackController);
         app.use('/api/scheduler', new SchedulerRoutes().getRouter());
     }
 }

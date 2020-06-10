@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Queue from 'bull';
 import {ApiJob, RabbitMQJob, JobConfig} from '../types';
+import Mailer from './Mailer';
 
 export default class Jobs {
     static processApiJob(jobConfig: ApiJob) {
@@ -24,7 +25,7 @@ export default class Jobs {
             data: requestBody,
             method: requestType
         })
-        .then(() => Promise.resolve())
+        .then(res => Promise.resolve({data: res.data, req: res.request}))
         .catch(err => Promise.reject(err));
     }
 
@@ -43,9 +44,7 @@ export default class Jobs {
             method: 'POST',
             data: { queue, data },
         }).then(res =>  Promise.resolve(res.data))
-        .catch(err => {
-            return Promise.reject(err);
-        });
+        .catch(err => Promise.reject(err));
     }
 
     static async processInvalidJob(job: Queue.Job<JobConfig>) {
@@ -62,18 +61,9 @@ export default class Jobs {
                 <code> ${JSON.stringify(jobOpts)} </code> </div>
             </div>
         `;
-        const email = 'sriram.r@adpushup.com';
-        const url = 'https://queuepublisher.adpushup.com/publish';
-        const apiBody = {
-            queue: 'MAILER',
-            data: { 
-                to: email,
-                body: mailBody,
-                subject: 'Invalid Job Published - Scheduler'
-            }
-        }
+        const subject = 'Invalid Job Posted';
         try {
-            const res = await axios.post(url, apiBody);
+            const res = await Mailer.sendMail(mailBody, subject);
             if (res.status !== 200 || res.statusText !== 'OK') {
                 return Promise.reject();
             }
