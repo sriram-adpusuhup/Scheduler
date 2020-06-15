@@ -1,5 +1,5 @@
 import Queue, { JobOptions, Job } from 'bull';
-import {JobConfig, JobType, ApiJob, RabbitMQJob} from '../types';
+import {JobConfig, JobType, ApiJob, RabbitMQJob} from '../utils/types';
 import Jobs from './jobs';
 import QueueListeners from './QueueListeners';
 
@@ -64,8 +64,20 @@ export default class AppQueue {
         return this.scheduledQueue.getJob(jobId);
     }
 
-    static purge() {
-        AppQueue.instance && AppQueue.instance.scheduledQueue.close();
+    getRepeatableJobs(): Promise<Queue.JobInformation[]> {
+        return this.scheduledQueue.getRepeatableJobs();
+    }
+
+    async removeRepeatableJob(jobKey: string): Promise<void> {
+        return this.scheduledQueue.removeRepeatableByKey(jobKey);
+    }
+
+    async removeAllRepeatable(): Promise<void> {
+        const repeatableJobs = await this.scheduledQueue.getRepeatableJobs();
+        for (let job of repeatableJobs) {
+            await this.removeRepeatableJob(job.key);
+        }
+        return Promise.resolve();
     }
 
 }

@@ -1,6 +1,6 @@
 import { Job } from 'bull';
 import axios from 'axios';
-import { JobConfig } from './../types';
+import { JobConfig } from '../utils/types';
 import Mailer from './Mailer';
 
 export default class QueueListener {
@@ -29,8 +29,8 @@ export default class QueueListener {
 
     static onFailed(job: Job<JobConfig>, err: Error) {
         console.log(`Job with ID ${job.id} failed. Attempts made ${job.attemptsMade}. Max attempts ${job.opts.attempts}`);
-        console.log(err);
         if (job.opts.attempts && job.attemptsMade === job.opts.attempts) {
+            // if max attempts reached, execute fallback logic.
             const jobConfig = job.data;
             if (jobConfig.retryOptions?.fallbackUrl) {
                 const apiBody = {

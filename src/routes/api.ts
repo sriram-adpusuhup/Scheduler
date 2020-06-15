@@ -1,9 +1,11 @@
 import express, {Request, Response} from 'express';
 import SchedulerRoutes from './schedulerRoutes';
+import AdpushupError from './../utils/AdpushupError';
+import asyncHandler from './../utils/asyncHandler';
 
 export default class ApiRouter {
 
-     static pong(req:Request, res:Response): Response {
+    static async pong(req:Request, res:Response): Promise<Response> {
         const {
             body,
             query,
@@ -39,7 +41,7 @@ export default class ApiRouter {
     }
 
     static initRoutes(app: express.Application) {
-        app.get('/api/ping', ApiRouter.pong);
+        app.route('/api/ping').all(asyncHandler(ApiRouter.pong));
         app.post('/api/fallback', ApiRouter.fallbackController);
         app.use('/api/scheduler', new SchedulerRoutes().getRouter());
     }

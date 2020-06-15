@@ -16,9 +16,20 @@ export enum RequestType {
     DELETE = 'DELETE'
 }
 
+export enum ExecutionType {
+    DELAY = 'delay',
+    REPEAT = 'repeat'
+};
+
+export type ExecutionOption = {
+    type: ExecutionType;
+    value: string | number;
+}
+
 export type JobConfig = {
     type: JobType;
-    config: any;
+    config: ApiJob | RabbitMQJob;
+    executionOptions: ExecutionOption;
     retryOptions?: RetryOptions;
 };
 

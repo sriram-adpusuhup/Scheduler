@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Queue from 'bull';
-import {ApiJob, RabbitMQJob, JobConfig} from '../types';
+import {ApiJob, RabbitMQJob, JobConfig} from '../utils/types';
 import Mailer from './Mailer';
 
 export default class Jobs {
@@ -25,7 +25,7 @@ export default class Jobs {
             data: requestBody,
             method: requestType
         })
-        .then(res => Promise.resolve({data: res.data, req: res.request}))
+        .then(res => Promise.resolve({data: res.data}))
         .catch(err => Promise.reject(err));
     }
 
@@ -64,8 +64,8 @@ export default class Jobs {
         const subject = 'Invalid Job Posted';
         try {
             const res = await Mailer.sendMail(mailBody, subject);
-            if (res.status !== 200 || res.statusText !== 'OK') {
-                return Promise.reject();
+            if (res.status !== 200) {
+                return Promise.reject({message: 'Mailer API sent an error'});
             }
             return Promise.resolve();
         } catch (err) {

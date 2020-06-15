@@ -3,6 +3,7 @@ import path from 'path';
 import {setQueues, UI} from 'bull-board';
 import Queue from './core/Queue';
 import ApiRouter from './routes/api';
+import globalErrorHandler from './globalErrorHandler';
 
 setQueues(Queue.getInstance().getQueues());
 
@@ -29,5 +30,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // init api routes
 ApiRouter.initRoutes(app);
+
+app.use(globalErrorHandler);
 
 export default app;
