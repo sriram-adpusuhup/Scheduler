@@ -1,0 +1,12 @@
+body {
+  background: Gainsboro; /* full background lightest grey */
+}
+.wrapper {
+  margin: 10% 0; /* margin top and bottom */
+}
+.form-signin {
+  background: White; /* white background */
+  max-width: 30%; /* limit width */
+  margin: 0 auto; /* center */
+  padding: 2%;
+}

@@ -27,7 +27,7 @@ const sendErrorProd = (err: Error, res: Response) => {
 const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     err.message = err.message || 'error!';
   
-    if (process.env.NODE_ENV === 'development') sendErrorDev(err, res);
+    if (process.env.NODE_ENV != 'production') sendErrorDev(err, res);
     else sendErrorProd(err, res);
 }
 

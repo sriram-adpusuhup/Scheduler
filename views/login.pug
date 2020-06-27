@@ -1,0 +1,23 @@
+doctype html
+html
+head
+    title Scheduler Console
+    link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css')
+    link(rel='stylesheet' type='text/css' href='stylesheets/style.css')
+body
+    div(class="wrapper")
+    div(class="form-signin")
+      h1= title
+      if error 
+        div(class="alert alert-danger" role='alert') #{error}
+      form(action="/login" method="post")
+        div(class="form-group")
+          label(for="username") Username
+          input(class="form-control" type="text",name="username" placeholder="Username" autofocus)
+        div(class="form-group")    
+          label(for="password") Password
+          input(class="form-control" type="password",name="password" placeholder="Password")
+        div(class="form-group")
+          div(class="text-center")
+            input(class="btn btn-primary" type="submit" value="Sign in")
+
