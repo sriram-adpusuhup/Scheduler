@@ -1,13 +1,15 @@
 import express, {Request, Response} from 'express';
-import path from 'path';
 import {setQueues, UI} from 'bull-board';
 import session from 'express-session';
 import {randomBytes, createHash} from 'crypto';
+import * as dotenv from 'dotenv';
 
 import Queue from './core/Queue';
 import ApiRouter from './routes/api';
 import globalErrorHandler from './globalErrorHandler';
 import authorizeAdmin from './utils/authMiddleware';
+
+dotenv.config();
 
 const ONE_HOUR = 60 * 60 * 1000;
 const {
@@ -16,7 +18,7 @@ const {
     NODE_ENV,
     SESSION_NAME = 'sid',
     ADMIN_USERNAME = 'admin',
-    ADMIN_PASSWORD_HASH = '4744e08db6e28cdc08adffec87c96344'
+    ADMIN_PASSWORD_HASH = '41d26eab3352193dca8f601adb94a34d'
 } = process.env;
 
 const IS_PRODUCTION = NODE_ENV === 'production';

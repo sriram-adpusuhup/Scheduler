@@ -40,7 +40,7 @@ export default class Jobs {
         }
         
         return axios({
-            url: `https://queuepublisher.adpushup.com${path}`,
+            url: `${process.env.RABBITMQ_PUBLISHABLE_URL}${path}`,
             method: 'POST',
             data: { queue, data },
         }).then(res =>  Promise.resolve(res.data))

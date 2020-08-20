@@ -3,3 +3,4 @@ config.js
 *.lock
 package-lock.json
 dist/
+.env

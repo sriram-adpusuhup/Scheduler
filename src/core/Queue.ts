@@ -11,8 +11,8 @@ export default class AppQueue {
     constructor() {
         this.scheduledQueue = new Queue('schedulerQueue', {
             redis: {
-                host: process.env.REDIS_HOST || 'redis://127.0.0.1:6397',
-                port: 6397
+                host: process.env.REDIS_HOST || '127.0.0.1',
+                port: parseInt(process.env.REDIS_PORT || '6379')
             }
         });
         this.scheduledQueue.process(this.queueProcess);
