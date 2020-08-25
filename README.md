@@ -14,7 +14,8 @@ Any job that you need to add should just have a REST API endpoint to perform the
     - [x] CRON Job
 - [x] Retry Support for jobs with fallback strategy
 - [x] Default fallback incase of no fallbakc strategy
-- [] Backoff strategies for retries
+- [x] Login UI before accessing /admin (Authorized)
+- [x] Start date and End date support for cron jobs
 
 ### FURTHER PLANS
 - [] Get job status [ Facing challenges because repeatable jobs keeps changing ID ]
@@ -26,4 +27,4 @@ Any job that you need to add should just have a REST API endpoint to perform the
 - [] Add admin authentication for administrative API's
 - [] Get all jobs (Authorized)
 - [] Purge all jobs (Authorized)
-- [] Login UI before accessing /admin (Authorized)
+

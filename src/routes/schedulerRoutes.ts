@@ -23,6 +23,8 @@ export default class SchedulerRoutes {
         } else if (executionOptions.type === ExecutionType.REPEAT) {
             jobOpts.repeat = {
                 cron: executionOptions.value.toString(),
+                startDate: executionOptions.startDate,
+                endDate: executionOptions.endDate,
             }
             jobId = `${JOB_KEYS.REPEATED_JOB_PREFIX}${jobId}`;
         }

@@ -24,6 +24,9 @@ export enum ExecutionType {
 export type ExecutionOption = {
     type: ExecutionType;
     value: string | number;
+    // start date and end date only supported for ExecutionType.REPEAT
+    startDate?: string;
+    endDate?: string
 }
 
 export type JobConfig = {
