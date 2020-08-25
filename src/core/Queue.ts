@@ -53,9 +53,9 @@ export default class AppQueue {
         const { type, config } = job.data || {};
         switch(type) {
             case JobType.API:
-                return Jobs.processApiJob(config as ApiJob);
+                return Jobs.processApiJob(config as ApiJob, job.id.toString());
             case JobType.RABBITMQ:
-                return Jobs.processRabbitMqJob(config as RabbitMQJob);
+                return Jobs.processRabbitMqJob(config as RabbitMQJob, job.id.toString());
             default: 
                 return Jobs.processInvalidJob(job);
         }  

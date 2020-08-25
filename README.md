@@ -19,7 +19,6 @@ Any job that you need to add should just have a REST API endpoint to perform the
 
 ### FURTHER PLANS
 - [] Get job status [ Facing challenges because repeatable jobs keeps changing ID ]
-- [] Add code examples [In Progress]
 - [] API Documentation [In Progress]
 - [] E2E tests
 - [] Eslint/Prettier setup

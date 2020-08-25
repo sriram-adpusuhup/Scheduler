@@ -1,5 +1,5 @@
 import express, {Response, Request} from 'express';
-import {JobOptions} from 'bull';
+import Bull, {JobOptions} from 'bull';
 import { v4 as uuid } from 'uuid';
 import {JobConfig, ExecutionType} from '../utils/types';
 import Queue from './../core/Queue';
@@ -21,11 +21,14 @@ export default class SchedulerRoutes {
             jobOpts.delay = +executionOptions.value;
             jobId = `${JOB_KEYS.DELAYED_JOB_PREFIX}${jobId}`;
         } else if (executionOptions.type === ExecutionType.REPEAT) {
-            jobOpts.repeat = {
+            const repeatOptions: Bull.CronRepeatOptions = {
                 cron: executionOptions.value.toString(),
-                startDate: executionOptions.startDate,
-                endDate: executionOptions.endDate,
-            }
+            };
+            if (executionOptions.startDate)
+                repeatOptions.startDate = new Date(executionOptions.startDate);
+            if (executionOptions.endDate)
+                repeatOptions.endDate = new Date(executionOptions.endDate);
+            jobOpts.repeat = repeatOptions;
             jobId = `${JOB_KEYS.REPEATED_JOB_PREFIX}${jobId}`;
         }
         retryOptions && (jobOpts.attempts = retryOptions?.attempts);
@@ -70,19 +73,19 @@ export default class SchedulerRoutes {
 
      static async jobDetailsController(req: Request, res: Response): Promise<Response | void> {
          const jobId = req.params.id;
-         const job = await Queue.getInstance().getJob(jobId);
+         const isRepeatableJob = jobId.startsWith(JOB_KEYS.REPEATED_JOB_PREFIX);
 
-         if (!job) throw new AdpushupError('Job not found or job has long been completed before 10 days', 404) 
-         return res.json(job.toJSON());
+         if (isRepeatableJob) throw new AdpushupError('Querying job details of a repeatable job is not supported yet', 404);
+         else {
+            const job = await Queue.getInstance().getJob(jobId);
+            if (!job) throw new AdpushupError('Job not found or job has been long completed before 10 days', 404);
+            return res.json(job.toJSON());
+         }
     }
 
     static async removeRepeatable(req: Request, res: Response): Promise<Response | void> {
         await Queue.getInstance().removeAllRepeatable();
         return res.json({message: 'OK'});
-    }
-
-    static async getAllJobsController(req: Request, res: Response): Promise<Response | void> {
-        // const jobs 
     }
 
     static async getAllRepeatableJobsController(req: Request, res: Response): Promise<Response | void> {

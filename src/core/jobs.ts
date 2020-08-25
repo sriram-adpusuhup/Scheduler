@@ -2,9 +2,11 @@ import axios from 'axios';
 import Queue from 'bull';
 import {ApiJob, RabbitMQJob, JobConfig} from '../utils/types';
 import Mailer from './Mailer';
+import Logger from './../utils/Logger';
 
 export default class Jobs {
-    static processApiJob(jobConfig: ApiJob) {
+    
+    static processApiJob(jobConfig: ApiJob, jobId: string) {
         const {
             url: apiUrl,
             query: queryParams,
@@ -25,11 +27,19 @@ export default class Jobs {
             data: requestBody,
             method: requestType
         })
-        .then(res => Promise.resolve({data: res.data}))
-        .catch(err => Promise.reject(err));
+        .then(res => {
+            if (res.status === 200) {
+                Logger.successLog(jobId, jobConfig);
+                return Promise.resolve({data: res.data})
+            }
+            throw new Error(`Job failed with status ${res.status}`);
+        })
+        .catch(err => {
+            Logger.failureLog(jobId, jobConfig, err);
+        });
     }
 
-    static processRabbitMqJob(job: RabbitMQJob) {
+    static processRabbitMqJob(job: RabbitMQJob, jobId: string) {
         const {data, queue} = job;
         if (!data) return Promise.reject();
         let path = '';
@@ -43,8 +53,14 @@ export default class Jobs {
             url: `${process.env.RABBITMQ_PUBLISHABLE_URL}${path}`,
             method: 'POST',
             data: { queue, data },
-        }).then(res =>  Promise.resolve(res.data))
-        .catch(err => Promise.reject(err));
+        }).then(res => {
+            Logger.successLog(jobId, job);
+            return Promise.resolve(res.data)
+        })
+        .catch(err => {
+            Logger.failureLog(jobId, job, err);
+            return Promise.reject(err)
+        });
     }
 
     static async processInvalidJob(job: Queue.Job<JobConfig>) {

@@ -43,6 +43,6 @@ export default class ApiRouter {
     static initRoutes(app: express.Application) {
         app.route('/api/ping').all(asyncHandler(ApiRouter.pong));
         app.post('/api/fallback', ApiRouter.fallbackController);
-        app.use('/api/scheduler', new SchedulerRoutes().getRouter());
+        app.use('/scheduler', new SchedulerRoutes().getRouter());
     }
 }

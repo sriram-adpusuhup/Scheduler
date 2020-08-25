@@ -19,7 +19,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "pug": "^3.0.0",
-    "uuid": "^8.1.0"
+    "uuid": "^8.1.0",
+    "node-utils": "git://github.com/adpushup/NodeUtils.git"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
