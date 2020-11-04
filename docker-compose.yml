@@ -4,9 +4,9 @@ services:
     restart: on-failure
     build: .
     ports:
-      - "8080:8080"
+      - "${PORT}:${PORT}"
     environment: 
-      PORT: 8080
+      PORT: ${PORT}
       REDIS_HOST: redis
       SESSION_SECRET: ${SESSION_SECRET}
       SESSION_NAME: ${SESSION_NAME}
@@ -17,10 +17,10 @@ services:
     depends_on: 
       - redis
   redis:
-    image: "redis"
+    image: redis:latest
     ports:
-      - "6397:6397"
+      - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - ./data:/usr/local/etc/redis/data
-    command: ["redis-server", "--bind", "redis", "--port", "6397"]
+    command: ["redis-server", "--bind", "redis", "--port", "6379"]
