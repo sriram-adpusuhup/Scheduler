@@ -26,11 +26,11 @@ const IS_PRODUCTION = NODE_ENV === 'production';
 // Inform Bull UI about our existing Queues.
 setQueues(Queue.getInstance().getQueues());
 
-process.on('unhandledRejection', (e: Error) => {
-    console.error(e.message);
-    console.log(e.stack);
-    process.exit(1);
-})
+// process.on('unhandledRejection', (e: Error) => {
+//     console.error(e.message);
+//     console.log(e.stack);
+//     process.exit(1);
+// })
 
 const app = express();
 app.use(express.json());
