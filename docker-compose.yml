@@ -22,6 +22,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-      - ./data:/usr/local/etc/redis/data
-    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+      - $PWD/data:/data
+    command: ["redis-server", "--bind", "redis", "--port", "6379", "--appendonly", "yes"]
+volumes:
+  redis-data:
