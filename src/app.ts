@@ -18,7 +18,7 @@ const {
     NODE_ENV,
     SESSION_NAME = 'sid',
     ADMIN_USERNAME = 'admin',
-    ADMIN_PASSWORD_HASH = '41d26eab3352193dca8f601adb94a34d'
+    ADMIN_PASSWORD_HASH = '9ad0a735497565363d76181b6d042f62'
 } = process.env;
 
 const IS_PRODUCTION = NODE_ENV === 'production';
@@ -65,16 +65,18 @@ app.get('/',authorizeAdmin, (req: Request, res: Response) => {
 
 app.route('/login')
     .get((req: Request, res: Response) => {
-        if (req.session && req.session.isLoggedIn) return res.redirect('/admin');
+        if (req.session && req.session['isLoggedIn']) 
+            return res.redirect('/admin');
         else return res.render('login');
     })
     .post((req: Request, res: Response) => {
         const {username, password} = req.body || {};
         const currentPasswordHash = createHash('md5').update(password).digest('hex');
+        console.log({ currentPasswordHash, admin: ADMIN_PASSWORD_HASH });
         if (username !== ADMIN_USERNAME || currentPasswordHash !== ADMIN_PASSWORD_HASH) {
             return res.render('login', {error: 'Invalid Credentials'});
         }
-        req.session && (req.session.isLoggedIn = true);
+        req.session && (req.session['isLoggedIn'] = true);
         return res.redirect('/');
     });
 
